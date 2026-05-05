@@ -57,7 +57,7 @@ def list_subgroups(args):
             chats.append((chat['topic'], chat['id'], chat['messages']['count']))
 
         page_num += 1
-        if len(current_chats['response']) == 0:
+        if len(current_chats['response']) < 10:
             listing_complete = True
 
     return chats
