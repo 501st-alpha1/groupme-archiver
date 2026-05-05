@@ -54,7 +54,7 @@ def list_subgroups(args):
         current_chats = json.loads(r.content)
 
         for chat in current_chats['response']:
-            chats.append((chat['name'], chat['id'], chat['messages']['count']))
+            chats.append((chat['topic'], chat['id'], chat['messages']['count']))
 
         page_num += 1
         if len(current_chats['response']) == 0:
