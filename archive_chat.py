@@ -36,6 +36,33 @@ def list_groups(args):
     return chats
 
 
+def list_subgroups(args):
+    headers = {'Content-Type': 'application/json'}
+    page_num = 1
+    listing_complete = False
+
+    chats = []
+    while not listing_complete:
+        params = {
+            'token': args.token,
+            'omit':  'memberships',
+            'page':  page_num
+        }
+        url = 'https://api.groupme.com/v3/groups/%s/subgroups' % (args.group_chat_id)
+        r = requests.get(url, headers=headers, params=params)
+
+        current_chats = json.loads(r.content)
+
+        for chat in current_chats['response']:
+            chats.append((chat['name'], chat['id'], chat['messages']['count']))
+
+        page_num += 1
+        if len(current_chats['response']) == 0:
+            listing_complete = True
+
+    return chats
+
+
 def list_dms(args):
     headers = {'Content-Type': 'application/json'}
     page_num = 1
