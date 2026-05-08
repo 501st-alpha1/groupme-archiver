@@ -184,6 +184,97 @@ def fetch_group_messages(args):
     return messages, people, group_info, all_attachments
 
 
+def fetch_subgroup_messages(args):
+    params = {
+        'token': args.token
+    }
+    url = 'https://api.groupme.com/v3/groups/%s/subgroups/%s' % (args.group_chat_id, args.subgroup_id)
+    r = requests.get(url, params=params)
+
+    people = {}
+    messages = []
+    group_info = {}
+
+    response = json.loads(r.content)['response']
+
+    group_info['name'] = response['name']
+    group_info['description'] = response['description']
+    group_info['image_url'] = response['image_url']
+    group_info['created_at'] = response['created_at']
+
+    for member in response['members']:
+        people[member['user_id']] = {'name': member['nickname']}
+        if args.save_global_avatars:
+            people[member['user_id']]['avatar_url'] = member['image_url']
+        else:
+            people[member['user_id']]['avatar_url'] = None
+
+    url = 'https://api.groupme.com/v3/groups/%s/messages' % (
+           args.subgroup_id)
+    r = requests.get(url, params=params)
+
+    curr_messages = json.loads(r.content)
+
+    # TODO Check for validity of request
+    num_total_messages = curr_messages['response']['count']
+    num_fetched_messages = 0
+    curr_messages = curr_messages['response']['messages']
+    all_attachments = []
+
+    print("Fetching %d messages..." % (num_total_messages))
+    pbar = tqdm(total=num_total_messages)
+    while num_fetched_messages < num_total_messages:
+        num_fetched_messages += len(curr_messages)
+        pbar.update(len(curr_messages))
+        for message in curr_messages:
+            if message['sender_id'] not in people:
+                people[message['sender_id']] = {
+                    'name': message['name'],
+                    'avatar_url': message['avatar_url']
+                }
+            if not args.save_global_avatars and \
+               people[message['sender_id']]['avatar_url'] is None:
+                people[message['sender_id']]['avatar_url'] = \
+                    message['avatar_url']
+
+            for att in message['attachments']:
+                if att['type'] == 'image' or \
+                   att['type'] == 'video' or \
+                   att['type'] == 'linked_image':
+                    all_attachments.append(att['url'])
+            # print("[%s] %s : %s" % (
+            #    message['created_at'], message['name'], message['text']))
+            messages.append({
+                'author': message['sender_id'],
+                'created_at': message['created_at'],
+                'text': message['text'],
+                'favorited_by': message['favorited_by'],
+                'attachments': message['attachments']
+            })
+        last_message_id = curr_messages[-1]['id']
+
+        params = {
+            'token': args.token,
+            'before_id': last_message_id,
+            'limit': args.num_messages_per_request
+        }
+        url = 'https://api.groupme.com/v3/groups/%s/messages' % (
+               args.group_chat_id)
+        r = requests.get(url, params=params)
+
+        if r.status_code == 304:
+            break
+        curr_messages = json.loads(r.content)
+
+        # TODO Check for validity of request
+        curr_messages = curr_messages['response']['messages']
+
+    pbar.close()
+    messages = list(reversed(messages))
+
+    return messages, people, group_info, all_attachments
+
+
 def fetch_direct_messages(args):
     params = {
         'token': args.token,
