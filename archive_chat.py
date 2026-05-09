@@ -202,6 +202,10 @@ def fetch_subgroup_messages(args):
     group_info['image_url'] = response['avatar_url']
     group_info['created_at'] = response['created_at']
 
+    url = 'https://api.groupme.com/v3/groups/%s' % (args.group_chat_id)
+    r = requests.get(url, params=params)
+
+    response = json.loads(r.content)['response']
     for member in response['members']:
         people[member['user_id']] = {'name': member['nickname']}
         if args.save_global_avatars:
