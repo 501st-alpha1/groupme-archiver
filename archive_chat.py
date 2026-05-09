@@ -199,7 +199,7 @@ def fetch_subgroup_messages(args):
 
     group_info['name'] = response['topic']
     group_info['description'] = response['description']
-    group_info['image_url'] = response['image_url']
+    group_info['image_url'] = response['avatar_url']
     group_info['created_at'] = response['created_at']
 
     for member in response['members']:
