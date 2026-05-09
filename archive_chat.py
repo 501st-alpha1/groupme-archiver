@@ -197,7 +197,7 @@ def fetch_subgroup_messages(args):
 
     response = json.loads(r.content)['response']
 
-    group_info['name'] = response['name']
+    group_info['name'] = response['topic']
     group_info['description'] = response['description']
     group_info['image_url'] = response['image_url']
     group_info['created_at'] = response['created_at']
