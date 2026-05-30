@@ -262,9 +262,9 @@ def main():
     args = parser.parse_args()
 
     if not args.group_chat_id and not args.direct_chat_id:
+        chats = list_groups(args)
         print("Group chats")
         print("===========")
-        chats = list_groups(args)
         table_headers = ["Chat Name", "ID", "Number of messages"]
         print(tabulate(chats, headers=table_headers))
 
