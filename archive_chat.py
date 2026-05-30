@@ -26,6 +26,10 @@ def list_groups(args):
 
         current_chats = json.loads(r.content)
 
+        if current_chats['meta']['code'] == 401:
+            print('Got HTTP 401 when fetching groups, has the token expired?')
+            sys.exit(1)
+
         for chat in current_chats['response']:
             chats.append((chat['name'], chat['id'], chat['messages']['count']))
 
