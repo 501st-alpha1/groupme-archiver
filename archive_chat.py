@@ -185,6 +185,10 @@ def fetch_direct_messages(args):
 
     curr_messages = json.loads(r.content)
 
+    if curr_messages['meta']['code'] == 401:
+        print('Got HTTP 401 when fetching direct messages, has the token expired?')
+        sys.exit(1)
+
     # TODO Check for validity of request
     num_total_messages = curr_messages['response']['count']
     num_fetched_messages = 0
