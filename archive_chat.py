@@ -86,6 +86,11 @@ def fetch_group_messages(args):
     group_info = {}
 
     content = json.loads(r.content)
+
+    if content['meta']['code'] == 401:
+        print('Got HTTP 401 when fetching group messages, has the token expired?')
+        sys.exit(1)
+
     response = content['response']
 
     group_info['name'] = response['name']
