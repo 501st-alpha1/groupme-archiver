@@ -85,7 +85,8 @@ def fetch_group_messages(args):
     messages = []
     group_info = {}
 
-    response = json.loads(r.content)['response']
+    content = json.loads(r.content)
+    response = content['response']
 
     group_info['name'] = response['name']
     group_info['description'] = response['description']
