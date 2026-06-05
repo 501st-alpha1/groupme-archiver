@@ -377,6 +377,9 @@ def main():
                         help="Use global avatars instead of " +
                              "chat specific user avatars")
 
+    parser.add_argument('--list-subgroups', '-l', dest='list_subgroups',
+                        action='store_true',
+                        help="List subgroups/topics for given group")
     args = parser.parse_args()
 
     if not args.group_chat_id and not args.direct_chat_id:
@@ -392,6 +395,14 @@ def main():
         chats = list_dms(args)
         table_headers = ["Chat Name", "ID", "Number of messages"]
         print(tabulate(chats, headers=table_headers))
+    elif args.list_subgroups:
+        if not args.group_chat_id:
+            print('Error: missing group chat ID to list subgroups.')
+            sys.exit(1)
+
+        subchats=list_subgroups(args)
+        table_headers = ["Chat Name", "ID", "Number of messages"]
+        print(tabulate(subchats, headers=table_headers))
     else:
         if args.group_chat_id:
             messages, people, group_info, all_attachments = \
