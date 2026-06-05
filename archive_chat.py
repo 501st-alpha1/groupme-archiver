@@ -380,6 +380,9 @@ def main():
     parser.add_argument('--list-subgroups', '-l', dest='list_subgroups',
                         action='store_true',
                         help="List subgroups/topics for given group")
+    parser.add_argument('--subgroup-id', '-s', dest='subgroup_id',
+                        help="Subgroup / topic ID to archive.")
+
     args = parser.parse_args()
 
     if not args.group_chat_id and not args.direct_chat_id:
@@ -405,8 +408,12 @@ def main():
         print(tabulate(subchats, headers=table_headers))
     else:
         if args.group_chat_id:
-            messages, people, group_info, all_attachments = \
-                fetch_group_messages(args)
+            if args.subgroup_id:
+                messages, people, group_info, all_attachments = \
+                    fetch_subgroup_messages(args)
+            else:
+                messages, people, group_info, all_attachments = \
+                    fetch_group_messages(args)
         else:
             messages, people, group_info, all_attachments = \
                 fetch_direct_messages(args)
