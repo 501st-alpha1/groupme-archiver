@@ -53,6 +53,10 @@ def list_subgroups(args):
 
         current_chats = json.loads(r.content)
 
+        if current_chats['meta']['code'] == 401:
+            print('Got HTTP 401 when fetching subgroups, has the token expired?')
+            sys.exit(1)
+
         for chat in current_chats['response']:
             chats.append((chat['topic'], chat['id'], chat['messages']['count']))
 
@@ -195,7 +199,13 @@ def fetch_subgroup_messages(args):
     messages = []
     group_info = {}
 
-    response = json.loads(r.content)['response']
+    content = json.loads(r.content)
+
+    if content['meta']['code'] == 401:
+        print('Got HTTP 401 when fetching group messages, has the token expired?')
+        sys.exit(1)
+
+    response = content['response']
 
     group_info['name'] = response['topic']
     group_info['description'] = response['description']
