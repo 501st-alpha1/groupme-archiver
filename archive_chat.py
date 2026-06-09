@@ -264,7 +264,7 @@ def fetch_subgroup_messages(args):
                 'created_at': message['created_at'],
                 'text': message['text'],
                 'favorited_by': message['favorited_by'],
-                'reactions': message['reactions'],
+                'reactions':  message['reactions'] if 'reactions' in message else None,
                 'attachments': message['attachments']
             })
         last_message_id = curr_messages[-1]['id']
